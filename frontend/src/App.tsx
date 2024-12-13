@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { ChatBar } from "./components/ChatBar";
 import { ClientList } from "./components/ClientList";
@@ -16,7 +16,8 @@ function App() {
   const [currUser, setCurrUser] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [clinetId, setClientId] = useState<string[]>([]);
+  const [clientId, setClientId] = useState<{ [key: string]: string }>({});
+  const [clientObj, setClientObj] = useState<{ [key: string]: string }>({});
   const [receiver, setRecevier] = useState("");
   const [pri, setPri] = useState(true);
   const ws = useRef<null | WebSocket>(null);
@@ -27,20 +28,52 @@ function App() {
     }
   }
 
+  function handleRecevier(c: string) {
+    setRecevier(c);
+  }
+
+  useEffect(
+    function () {
+      ws.current?.send(JSON.stringify({ content: clientId }));
+    },
+    [clientId]
+  );
+
   useEffect(() => {
-    ws.current = new WebSocket("ws://192.168.101.7:8080");
-    ws.current.onopen = () => {
-      console.log("connection established");
-    };
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "id") {
-        setClientId((prev) => [...prev, data.id]);
-      } else {
-        setMessages((prev) => [...prev, data.message]);
-      }
-    };
-  }, []);
+    if (checkUserName) {
+      ws.current = new WebSocket("ws://192.168.101.7:8080");
+
+      ws.current.onopen = () => {
+        console.log("connection established");
+      };
+
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (ws.current) {
+          if (data.type === "id") {
+            setClientId((prev) => ({ ...prev, [data.id]: currUser }));
+          }
+          if (data.type === "clientList") {
+            const updated = data.cliObj;
+            if (clientObj === updated) {
+              setClientObj(clientObj); // No change, don't trigger re-render
+            }
+            setClientObj(updated);
+
+            // setClientObj(data.cliObj);
+          } else {
+            setMessages((prev) => [...prev, data.message]);
+          }
+        }
+      };
+      return () => {
+        if (ws.current) {
+          ws.current.close();
+        }
+      };
+    }
+  }, [currUser]);
 
   function sendMessage() {
     if (ws.current?.readyState === WebSocket.OPEN && pri) {
@@ -49,17 +82,17 @@ function App() {
       setInput("");
     }
   }
+  console.log(clientObj);
 
-  if (!ws.current) {
-    return (
-      <div className="bg-zinc-800 h-screen text-white">
-        <div className="flex justify-center items-center h-full  gap-7">
-          Loading...
-        </div>
-      </div>
-    );
-  }
-
+  // if (!ws.current) {
+  //   return (
+  //     <div className="bg-zinc-800 h-screen text-white relative">
+  //       <div className="flex justify-center items-center h-full  gap-7">
+  //         Loading...
+  //       </div>
+  //     </div>
+  //   );
+  // }
   return (
     <div className="bg-zinc-800 h-screen text-white relative">
       <div
@@ -67,18 +100,27 @@ function App() {
           checkUserName ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
-        <UserId checkUserName={userNameChecker} setCurrUser={setCurrUser} />
+        <UserId
+          checkUserName={userNameChecker}
+          setCurrUser={setCurrUser}
+          setCheckUserName={setCheckUserName}
+        />
       </div>
       <div
         className={`flex justify-center items-center h-full  gap-7 ${
           checkUserName ? "" : " blur-xl"
         }`}
       >
-        <div className="absolute z-20 top-0 left-0">
-          Hello, {currUser && currUser[0].toUpperCase() + currUser.slice(1)}
+        <div className="absolute z-20 top-5 left-5">
+          Hello, {currUser && currUser[0].toUpperCase() + currUser.slice(1)}{" "}
         </div>
-        <ChatBar currUser={currUser} />
-        <ClientList cliList={clinetId} />
+        <ChatBar currSender={receiver} />
+        <ClientList
+          cliList={clientObj}
+          currClient={clientId}
+          currSender={handleRecevier}
+          receiver={receiver}
+        />
       </div>
     </div>
   );

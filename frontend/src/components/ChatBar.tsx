@@ -1,8 +1,8 @@
 interface propType {
-  currUser: string;
+  currSender: string;
 }
 
-export function ChatBar({ currUser }: propType) {
+export function ChatBar({ currSender }: propType) {
   return (
     // <div className="bg-zinc-900 h-3/4 w-fit border border-zinc-700 rounded-xl px-5">
     //   <div className="flex  mt-5 gap-2.5 justify-start">
@@ -22,7 +22,9 @@ export function ChatBar({ currUser }: propType) {
         <div className="h-7 w-7 bg-zinc-700 flex justify-center items-center rounded-full">
           U
         </div>
-        <div className="mt-0.5">User</div>
+        <div className="mt-0.5 transition ease-in duration-300">
+          {currSender ? `${currSender} ` : "User"}
+        </div>
       </div>
       <div className="h-0.5 bg-gradient-to-r from-transparent via-zinc-700 to-transparent w-full mt-2.5"></div>
       <div className="flex-grow flex items-end w-72 mb-4 gap-1.5">
