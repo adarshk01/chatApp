@@ -15,10 +15,10 @@ function App() {
   const [checkUserName, setCheckUserName] = useState(false);
   const [currUser, setCurrUser] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+
   const [clientId, setClientId] = useState<{ [key: string]: string }>({});
   const [clientObj, setClientObj] = useState<{ [key: string]: string }>({});
-  const [receiver, setRecevier] = useState("");
+  const [receiver, setRecevier] = useState<{ [key: string]: string }>({});
   const [pri, setPri] = useState(true);
   const ws = useRef<null | WebSocket>(null);
 
@@ -28,13 +28,17 @@ function App() {
     }
   }
 
-  function handleRecevier(c: string) {
-    setRecevier(c);
+  // function handleRecevier(c: { [key: string]: string }) {
+  //   setRecevier(c);
+  // }
+
+  function handleRecevier(key: string, value: string) {
+    setRecevier({ [key]: value });
   }
 
   useEffect(
     function () {
-      ws.current?.send(JSON.stringify({ content: clientId }));
+      ws.current?.send(JSON.stringify({ event: "message", content: clientId }));
     },
     [clientId]
   );
@@ -62,8 +66,10 @@ function App() {
             setClientObj(updated);
 
             // setClientObj(data.cliObj);
-          } else {
-            setMessages((prev) => [...prev, data.message]);
+          }
+          if (data.type === "private") {
+            console.log(data.message);
+            setMessages(data.message);
           }
         }
       };
@@ -75,14 +81,26 @@ function App() {
     }
   }, [currUser]);
 
-  function sendMessage() {
-    if (ws.current?.readyState === WebSocket.OPEN && pri) {
-      const messageData = { type: "private", to: receiver, message: input };
-      ws.current.send(JSON.stringify(messageData));
-      setInput("");
+  function sendMessage(c: string) {
+    if (ws.current?.readyState === WebSocket.OPEN && pri && c) {
+      const messageData = {
+        type: "private",
+        sender: Object.keys(clientId)[0],
+        to: Object.keys(receiver)[0],
+        message: c,
+      };
+      ws.current.send(
+        JSON.stringify({
+          event: "newMessage",
+          content: messageData,
+        })
+      );
+      console.log(messageData);
+    } else {
+      console.error("WebSocket not ready or pri is false.");
     }
   }
-  console.log(clientObj);
+  console.log(receiver);
 
   // if (!ws.current) {
   //   return (
@@ -94,7 +112,7 @@ function App() {
   //   );
   // }
   return (
-    <div className="bg-zinc-800 h-screen text-white relative">
+    <div className="bg-neutral-800 h-fit w-fit  sm:w-auto sm:h-screen text-white relative">
       <div
         className={`flex justify-center items-center h-full w-full absolute z-10 transition duration-300 ease-out ${
           checkUserName ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -107,14 +125,14 @@ function App() {
         />
       </div>
       <div
-        className={`flex justify-center items-center h-full  gap-7 ${
+        className={` md:flex md:justify-center md:items-center h-full  gap-7 relative ${
           checkUserName ? "" : " blur-xl"
         }`}
       >
         <div className="absolute z-20 top-5 left-5">
           Hello, {currUser && currUser[0].toUpperCase() + currUser.slice(1)}{" "}
         </div>
-        <ChatBar currSender={receiver} />
+        <ChatBar currSender={receiver} sendMessage={sendMessage} />
         <ClientList
           cliList={clientObj}
           currClient={clientId}

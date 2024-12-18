@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .no-scroll-buttons::-webkit-scrollbar-button {
+    display: none;
+  }
+  .rounded-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Adjust the width as needed */
+  }
+
+  .rounded-scrollbar::-webkit-scrollbar-thumb {
+    /* Tailwind gray-500 color */
+    /* border-radius: 10px; Rounds the ends of the scrollbar thumb */
+    @apply bg-zinc-700 rounded-full   transition-colors;
+  }
+}
