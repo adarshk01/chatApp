@@ -14,7 +14,7 @@ function App() {
   // const [socket, setSocket] = useState<null | WebSocket>(null);
   const [checkUserName, setCheckUserName] = useState(false);
   const [currUser, setCurrUser] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<string[]>([]);
 
   const [clientId, setClientId] = useState<{ [key: string]: string }>({});
   const [clientObj, setClientObj] = useState<{ [key: string]: string }>({});
@@ -68,8 +68,7 @@ function App() {
             // setClientObj(data.cliObj);
           }
           if (data.type === "private") {
-            console.log(data.message);
-            setMessages(data.message);
+            setMessages((prev) => [...prev, data.message]);
           }
         }
       };
@@ -132,7 +131,11 @@ function App() {
         <div className="absolute z-20 top-5 left-5">
           Hello, {currUser && currUser[0].toUpperCase() + currUser.slice(1)}{" "}
         </div>
-        <ChatBar currSender={receiver} sendMessage={sendMessage} />
+        <ChatBar
+          currSender={receiver}
+          sendMessage={sendMessage}
+          messages={messages}
+        />
         <ClientList
           cliList={clientObj}
           currClient={clientId}

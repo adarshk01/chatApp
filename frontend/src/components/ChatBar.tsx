@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 
 interface propType {
   currSender: { [key: string]: string };
   sendMessage: (c: string) => void;
+  messages: string[];
 }
 
-export function ChatBar({ currSender, sendMessage }: propType) {
+export function ChatBar({ currSender, sendMessage, messages }: propType) {
   const [input, setInput] = useState("");
+  const [submittedValue, setSubmittedValue] = useState("");
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      setSubmittedValue(input);
+      setInput(""); // Clear the input after submission
+    }
+  };
   return (
     // <div className="bg-zinc-900 h-3/4 w-fit border border-zinc-700 rounded-xl px-5">
     //   <div className="flex  mt-5 gap-2.5 justify-start">
@@ -28,7 +37,7 @@ export function ChatBar({ currSender, sendMessage }: propType) {
             ? `${Object.values(currSender)[0][0].toUpperCase()} `
             : "U"}
         </div>
-        <div className="mt-0.5 transition-opacity ease-in duration-300">
+        <div className="mt-0.5 transition-opacity ease-in duration-300 font-semibold">
           {currSender && Object.values(currSender).length > 0
             ? `${
                 Object.values(currSender)[0][0].toUpperCase() +
@@ -38,9 +47,22 @@ export function ChatBar({ currSender, sendMessage }: propType) {
         </div>
       </div>
       <div className="h-0.5 bg-gradient-to-r from-transparent via-zinc-700 to-transparent w-full mt-2.5"></div>
-      <div className="h-full w-full bg-zinc-900 my-5"></div>
+      <div className="h-full w-full bg-zinc-900 my-5 overflow-y-auto rounded-scrollbar no-scroll-buttons">
+        {messages &&
+          messages.map((value, index) => {
+            return (
+              <div
+                key={index}
+                className="h-fit w-fit p-1 px-1.5 bg-white text-black font-semibold mb-2 rounded-lg"
+              >
+                {value}
+              </div>
+            );
+          })}
+      </div>
       <div className="flex-grow flex items-end w-72 mb-4 gap-1.5">
         <input
+          value={input}
           onChange={function (e) {
             setInput(e.target.value);
           }}
@@ -52,6 +74,7 @@ export function ChatBar({ currSender, sendMessage }: propType) {
           className=" h-8 w-8 bg-zinc-700 rounded-full flex justify-center items-center p-1.5 cursor-pointer"
           onClick={() => {
             sendMessage(input);
+            setInput("");
           }}
         >
           <svg

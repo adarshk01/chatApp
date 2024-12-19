@@ -29,12 +29,16 @@ export function ClientList({
                 className=" flex justify-start gap-2.5 mt-5 transition ease-in duration-300 hover:bg-zinc-600 p-1 rounded-lg cursor-pointer px-2.5 py-2.5"
               >
                 <div
-                  className={`h-8 w-8 bg-white text-black rounded-full flex justify-center items-center font-semibold 
-                  ${receiver[key] == value ? "bg-lime-400" : ""}`}
+                  className={`h-8 w-8  text-black rounded-full flex justify-center items-center font-semibold transition-colors duration-300 ease-in-out
+                  ${receiver[key] === value ? "bg-white " : "bg-zinc-700"}`}
                 >
                   {value[0].toUpperCase()}
                 </div>
-                <div className="flex items-center">
+                <div
+                  className={`flex items-center transition-colors duration-300 ease-in-out ${
+                    receiver[key] === value ? "text-white " : "text-zinc-700"
+                  }`}
+                >
                   {value[0].toUpperCase() + value.slice(1)}
                 </div>
               </div>
