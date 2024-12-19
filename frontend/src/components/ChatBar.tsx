@@ -4,16 +4,18 @@ interface propType {
   currSender: { [key: string]: string };
   sendMessage: (c: string) => void;
   messages: string[];
+  test: string;
 }
 
-export function ChatBar({ currSender, sendMessage, messages }: propType) {
+export function ChatBar({ currSender, sendMessage, messages, test }: propType) {
   const [input, setInput] = useState("");
-  const [submittedValue, setSubmittedValue] = useState("");
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      setSubmittedValue(input);
-      setInput(""); // Clear the input after submission
+      // setSubmittedValue(input);
+      // setInput(""); // Clear the input after submission
+      sendMessage(input);
+      setInput("");
     }
   };
   return (
@@ -49,6 +51,7 @@ export function ChatBar({ currSender, sendMessage, messages }: propType) {
       <div className="h-0.5 bg-gradient-to-r from-transparent via-zinc-700 to-transparent w-full mt-2.5"></div>
       <div className="h-full w-full bg-zinc-900 my-5 overflow-y-auto rounded-scrollbar no-scroll-buttons">
         {messages &&
+          Object.keys(currSender)[0] == test &&
           messages.map((value, index) => {
             return (
               <div
@@ -66,6 +69,7 @@ export function ChatBar({ currSender, sendMessage, messages }: propType) {
           onChange={function (e) {
             setInput(e.target.value);
           }}
+          onKeyDown={handleKeyDown}
           className=" bg-zinc-700 p-1.5 text-sm rounded-2xl pl-3 w-full"
           type="text"
           placeholder="Type..."

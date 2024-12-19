@@ -15,7 +15,7 @@ function App() {
   const [checkUserName, setCheckUserName] = useState(false);
   const [currUser, setCurrUser] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
-
+  const [test, setTest] = useState("");
   const [clientId, setClientId] = useState<{ [key: string]: string }>({});
   const [clientObj, setClientObj] = useState<{ [key: string]: string }>({});
   const [receiver, setRecevier] = useState<{ [key: string]: string }>({});
@@ -69,6 +69,7 @@ function App() {
           }
           if (data.type === "private") {
             setMessages((prev) => [...prev, data.message]);
+            setTest(data.from);
           }
         }
       };
@@ -135,6 +136,7 @@ function App() {
           currSender={receiver}
           sendMessage={sendMessage}
           messages={messages}
+          test={test}
         />
         <ClientList
           cliList={clientObj}
