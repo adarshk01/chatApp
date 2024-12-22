@@ -78,7 +78,7 @@ export function ChatBar({
         </div>
       </div>
       <div className="h-0.5 bg-gradient-to-r from-transparent via-zinc-700 to-transparent w-full mt-2.5"></div>
-      <div className="h-full w-full bg-zinc-900 my-5 overflow-y-auto rounded-scrollbar no-scroll-buttons">
+      <div className="h-full w-80 bg-zinc-900 my-5 overflow-y-auto rounded-scrollbar no-scroll-buttons">
         {/* {messages &&
           Object.keys(currSender)[0] == test &&
           messages.map((value, index) => {
@@ -122,7 +122,7 @@ export function ChatBar({
             } mb-2`}
           >
             <div
-              className={`h-fit w-fit p-1 px-1.5 text-black font-semibold rounded-lg
+              className={`h-fit w-fit p-1 px-1.5 text-black font-semibold rounded-lg break-words whitespace-pre-wrap  max-w-[90%]
               ${message.to ? "bg-zinc-700 text-white" : "bg-white"}
             `}
             >
@@ -139,7 +139,7 @@ export function ChatBar({
           </div>
         ) : null}
       </div>
-      <div className="flex-grow flex items-end w-72 mb-4 gap-1.5">
+      <div className="flex-grow flex items-end w-full mb-4 gap-1.5">
         <input
           disabled={Object.keys(currSender).length === 0}
           value={input}
