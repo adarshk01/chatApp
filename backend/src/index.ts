@@ -24,7 +24,6 @@ wss.on("connection", function connection(ws) {
   ws.send(JSON.stringify({ type: "id", id: clientId }));
   ws.on("message", function message(data: any, message) {
     const parsedData = JSON.parse(data.toString());
-    console.log(parsedData);
 
     if (parsedData.event === "message") {
       let tempObj = JSON.parse(JSON.stringify(parsedData.content));

@@ -52,7 +52,8 @@ function App() {
 
   useEffect(() => {
     if (checkUserName) {
-      ws.current = new WebSocket("ws://192.168.101.7:8080");
+      // ws.current = new WebSocket("ws://192.168.101.7:8080");
+      ws.current = new WebSocket("wss://chatapp-h3cu.onrender.com");
 
       ws.current.onopen = () => {
         console.log("connection established");
@@ -76,7 +77,7 @@ function App() {
           }
           //someone has sent a message
           if (data.type === "private") {
-            console.log(data);
+            // console.log(data);
             setMessages((prev) => [...prev, data.message]);
             setChatStore((prev) => {
               return {
@@ -134,17 +135,17 @@ function App() {
           content: messageData,
         })
       );
-      console.log(messageData);
+      // console.log(messageData);
     } else {
       console.error("WebSocket not ready or pri is false.");
     }
   }
   // console.log(receiver);
-  console.log("this is clientID " + JSON.stringify(clientId));
+  // console.log("this is clientID " + JSON.stringify(clientId));
 
-  console.log(
-    "This is the chat structure: " + JSON.stringify(chatStore, null, 2)
-  );
+  // console.log(
+  //   "This is the chat structure: " + JSON.stringify(chatStore, null, 2)
+  // );
   // if (!ws.current) {
   //   return (
   //     <div className="bg-zinc-800 h-screen text-white relative">
