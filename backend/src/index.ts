@@ -31,19 +31,6 @@ wss.on("connection", function connection(ws) {
 
       // let tempObj = JSON.parse(JSON.stringify(parsedData.content));
 
-      // if (parsedData.type === "private") {
-      //   // Check if the target client exists
-      //   const targetClient = JSON.parse(JSON.stringify(parsedData.to));
-      //   if (targetClient && targetClient.readyState === WebSocket.OPEN) {
-      //     targetClient.send(
-      //       JSON.stringify({
-      //         type: "private",
-      //         from: clientId,
-      //         message: parsedData.message,
-      //       })
-      //     );
-      //   }
-      // }
       Object.assign(cliObj, tempObj);
       // console.log("Received message:", cliObj);
 
