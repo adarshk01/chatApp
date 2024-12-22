@@ -21,9 +21,7 @@ interface propType {
 export function ChatBar({
   currSender,
   sendMessage,
-  messages,
-  test,
-  sentMsg,
+
   chatStore,
 }: propType) {
   const [input, setInput] = useState("");

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { ChatBar } from "./components/ChatBar";
 import { ClientList } from "./components/ClientList";
@@ -25,7 +25,7 @@ function App() {
   const [clientId, setClientId] = useState<{ [key: string]: string }>({});
   const [clientObj, setClientObj] = useState<{ [key: string]: string }>({});
   const [receiver, setRecevier] = useState<{ [key: string]: string }>({});
-  const [pri, setPri] = useState(true);
+  const pri = true;
   const [sentMsg, setSentMsg] = useState<string[]>([]);
   const ws = useRef<null | WebSocket>(null);
 
