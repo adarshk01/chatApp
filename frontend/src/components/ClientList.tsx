@@ -13,7 +13,7 @@ export function ClientList({
 }: propType) {
   const [firstKey] = Object.keys(currClient);
   return (
-    <div className="bg-zinc-900 h-3/4 w-fit border border-zinc-700 rounded-xl px-3 drop-shadow-lg ">
+    <div className="bg-zinc-900 h-[500px] md:h-3/4  md:min-h-3/4 w-fit border border-zinc-700 rounded-xl px-3 drop-shadow-lg ">
       <div className="mt-5">Clients</div>
       <div className="h-0.5 bg-gradient-to-r from-transparent via-zinc-700 to-transparent w-full mt-2.5  drop-shadow-lg"></div>
       <div
@@ -26,7 +26,7 @@ export function ClientList({
               <div
                 key={key}
                 onClick={() => currSender(key, value)}
-                className=" flex justify-start gap-2.5 mt-5 transition ease-in duration-300 hover:bg-zinc-600 p-1 rounded-lg cursor-pointer px-2.5 py-2.5"
+                className=" md:flex md:justify-start md:gap-2.5 mt-5 transition ease-in duration-300 hover:bg-zinc-600 p-1 rounded-lg cursor-pointer px-2.5 py-2.5"
               >
                 <div
                   className={`h-8 w-8  text-black rounded-full flex justify-center items-center font-semibold transition-colors duration-300 ease-in-out
@@ -35,7 +35,7 @@ export function ClientList({
                   {value[0].toUpperCase()}
                 </div>
                 <div
-                  className={`flex items-center transition-colors duration-300 ease-in-out ${
+                  className={`flex justify-center items-center transition-colors duration-300 ease-in-out ${
                     receiver[key] === value ? "text-white " : "text-zinc-700"
                   }`}
                 >

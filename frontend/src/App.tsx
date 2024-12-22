@@ -4,22 +4,29 @@ import { ChatBar } from "./components/ChatBar";
 import { ClientList } from "./components/ClientList";
 import { UserId } from "./components/UserId";
 
-type Message = {
-  type: "private";
+interface Message {
+  to: string;
   from: string;
-  message: string;
-};
+  msg: string;
+}
+
+interface ChatStore {
+  [Id: string]: Message[];
+}
 
 function App() {
   // const [socket, setSocket] = useState<null | WebSocket>(null);
   const [checkUserName, setCheckUserName] = useState(false);
   const [currUser, setCurrUser] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
-  const [test, setTest] = useState("");
+  const [chatStore, setChatStore] = useState<ChatStore>({});
+
+  const [sender, setSender] = useState("");
   const [clientId, setClientId] = useState<{ [key: string]: string }>({});
   const [clientObj, setClientObj] = useState<{ [key: string]: string }>({});
   const [receiver, setRecevier] = useState<{ [key: string]: string }>({});
   const [pri, setPri] = useState(true);
+  const [sentMsg, setSentMsg] = useState<string[]>([]);
   const ws = useRef<null | WebSocket>(null);
 
   function userNameChecker() {
@@ -67,9 +74,41 @@ function App() {
 
             // setClientObj(data.cliObj);
           }
+          //someone has sent a message
           if (data.type === "private") {
+            console.log(data);
             setMessages((prev) => [...prev, data.message]);
-            setTest(data.from);
+            setChatStore((prev) => {
+              return {
+                ...prev,
+                [data.from]: [
+                  ...(prev[data.from] || []),
+                  {
+                    from: data.from,
+                    to: Object.keys(clientId)[0],
+                    msg: data.message,
+                  },
+                ],
+              };
+            });
+            setSender(data.from);
+          }
+          //I have sent a message
+          if (data.type === "receipt") {
+            setSentMsg((prev) => [...prev, data.message]);
+            setChatStore((prev) => {
+              return {
+                ...prev,
+                [data.to]: [
+                  ...(prev[data.to] || []),
+                  {
+                    from: Object.keys(clientId)[0],
+                    to: data.to,
+                    msg: data.message,
+                  },
+                ],
+              };
+            });
           }
         }
       };
@@ -100,8 +139,12 @@ function App() {
       console.error("WebSocket not ready or pri is false.");
     }
   }
-  console.log(receiver);
+  // console.log(receiver);
+  console.log("this is clientID " + JSON.stringify(clientId));
 
+  console.log(
+    "This is the chat structure: " + JSON.stringify(chatStore, null, 2)
+  );
   // if (!ws.current) {
   //   return (
   //     <div className="bg-zinc-800 h-screen text-white relative">
@@ -112,7 +155,7 @@ function App() {
   //   );
   // }
   return (
-    <div className="bg-neutral-800 h-fit w-fit  sm:w-auto sm:h-screen text-white relative">
+    <div className="bg-neutral-800 h-fit w-fit  sm:w-auto md:h-screen text-white relative ">
       <div
         className={`flex justify-center items-center h-full w-full absolute z-10 transition duration-300 ease-out ${
           checkUserName ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -125,18 +168,20 @@ function App() {
         />
       </div>
       <div
-        className={` md:flex md:justify-center md:items-center h-full  gap-7 relative ${
+        className={` flex justify-center  items-center h-full gap-2 md:gap-7 mx-5 md:mx-0  relative ${
           checkUserName ? "" : " blur-xl"
         }`}
       >
-        <div className="absolute z-20 top-5 left-5">
+        <div className="absolute z-30 top-5 left-1 md:left-5  ">
           Hello, {currUser && currUser[0].toUpperCase() + currUser.slice(1)}{" "}
         </div>
         <ChatBar
           currSender={receiver}
           sendMessage={sendMessage}
           messages={messages}
-          test={test}
+          test={sender}
+          sentMsg={sentMsg}
+          chatStore={chatStore}
         />
         <ClientList
           cliList={clientObj}

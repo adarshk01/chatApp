@@ -78,6 +78,17 @@ wss.on("connection", function connection(ws) {
           })
         );
       }
+      const senderClient = cli.get(sender);
+      if (senderClient && senderClient.readyState === WebSocket.OPEN) {
+        senderClient.send(
+          JSON.stringify({
+            type: "receipt",
+            to: to,
+            message: messageContent,
+            status: "delivered", // Or any relevant status
+          })
+        );
+      }
     }
   });
 
