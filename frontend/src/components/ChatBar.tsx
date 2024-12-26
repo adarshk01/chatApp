@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 
 interface Message {
   to: string;
@@ -26,6 +26,7 @@ export function ChatBar({
 }: propType) {
   const [input, setInput] = useState("");
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
+  const scrollableDivRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const senderId = Object.keys(currSender)[0];
@@ -35,6 +36,18 @@ export function ChatBar({
       setCurrentMessages([]);
     }
   }, [currSender, chatStore]);
+
+  useEffect(() => {
+    const scrollToBottom = () => {
+      const div = scrollableDivRef.current;
+      if (div && div.scrollHeight > div.clientHeight) {
+        div.scrollTo({ top: div.scrollHeight, behavior: "smooth" });
+      }
+    };
+    const timeoutId = setTimeout(scrollToBottom, 10);
+
+    return () => clearTimeout(timeoutId);
+  }, [chatStore[Object.keys(currSender)[0]]]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -78,11 +91,14 @@ export function ChatBar({
         </div>
       </div>
       <div className="h-0.5 bg-gradient-to-r from-transparent via-zinc-700 to-transparent w-full mt-2.5"></div>
-      <div className="h-full w-80 bg-zinc-900 my-5 overflow-y-auto rounded-scrollbar no-scroll-buttons">
+      <div
+        className="h-full w-80 bg-zinc-900 my-5 overflow-y-auto rounded-scrollbar no-scroll-buttons"
+        ref={scrollableDivRef}
+      >
         {/* {messages &&
           Object.keys(currSender)[0] == test &&
           messages.map((value, index) => {
-            return (
+            return ( 
               <div
                 key={index}
                 className="h-fit w-fit p-1 px-1.5 bg-white text-black font-semibold mb-2 rounded-lg"
